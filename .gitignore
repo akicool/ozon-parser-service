@@ -1,0 +1,58 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+*.env
+*.venv
+
+# Log files
+logs/
+*.log
+nohup.out
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor & IDE files
+.vscode/
+.idea/
+*.iml
+
+# Pip dependencies
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Pytest & coverage
+.coverage
+*.cover
+.hypothesis/
+.tox/
+.nox/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Build files
+build/
+dist/
+*.egg-info/
+.installed.cfg
+
+# Docker & Deployment
+docker-compose.override.yml
+.envrc
+
+# FastAPI & Gunicorn
+instance/
+gunicorn.log
+gunicorn.error.log
+
+api-check.*.py
+check.py
+p.py
