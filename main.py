@@ -2,6 +2,7 @@ import time, os, subprocess, re
 from flask import Flask, jsonify, request
 from lxml import html
 import undetected_chromedriver as uc
+from seleniumbase import Driver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -11,13 +12,14 @@ app = Flask(__name__)
 
 def get_html_page(url):
     try:
-        options = Options()
-        # options.add_argument('--headless')  # Режим без 
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        options.add_argument('--window-size=1920x1080')
+        # options = Options()
+        # options.add_argument('--headless=new')  # Режим без 
+        # options.add_argument('--no-sandbox')
+        # options.add_argument('--disable-dev-shm-usage')
+        # options.add_argument('--window-size=1920x1080')
 
-        driver = uc.Chrome(options=options)
+        # driver = uc.Chrome(options=options, headless=True, use_subprocess=True)
+        driver = Driver(uc=True, headless=True)
         driver.get(url)
         
         # Ожидание появления элемента, характерного для загруженной страницы
