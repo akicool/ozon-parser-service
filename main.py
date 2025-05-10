@@ -1,4 +1,4 @@
-import time, os, subprocess, re
+import time, re
 from flask import Flask, jsonify, request
 from lxml import html
 import undetected_chromedriver as uc
@@ -12,25 +12,22 @@ app = Flask(__name__)
 
 def get_html_page(url):
     try:
-        # options = Options()
-        # options.add_argument('--headless=new')  # Режим без 
-        # options.add_argument('--no-sandbox')
-        # options.add_argument('--disable-dev-shm-usage')
-        # options.add_argument('--window-size=1920x1080')
-
-        # driver = uc.Chrome(options=options, headless=True, use_subprocess=True)
+        print("→ Запуск драйвера")
         driver = Driver(uc=True, headless=True)
-        driver.get(url)
         
-        # Ожидание появления элемента, характерного для загруженной страницы
+        print("→ Открытие URL")
+        driver.get(url)
+
+        print("→ Ожидание элемента")
         WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "#stickyHeader"))
         )
-        
-        # Имитация прокрутки страницы
+
+        print("→ Скроллинг и ожидание")
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight/3);")
         time.sleep(2)
-
+        
+        print("→ Получение HTML")
         html_content = driver.page_source
         driver.quit()
         return html_content
@@ -44,7 +41,6 @@ def parse_product_data(html_content, url):
         tree = html.fromstring(html_content)
         result = {'productLink': url}
 
-        # Проверка на отсутствие товара
         out_of_stock_xpath = "//h2[contains(text(), 'Товара нет в наличии') or contains(text(), 'Этот товар закончился')]"
         if tree.xpath(out_of_stock_xpath):
             return {
@@ -54,26 +50,22 @@ def parse_product_data(html_content, url):
                 "message": "Этот товар закончился"
             }
 
-        # Название товара
         title_xpath = "//div[@data-widget='webProductHeading']//h1/text()"
         title = tree.xpath(title_xpath)
         result['title'] = title[0].strip() if title else None
 
-        # Цена с Ozon Картой
         ozon_price_xpath = "//div[@data-widget='webPrice']//span[contains(text(), '₽')]/text()"
         prices = tree.xpath(ozon_price_xpath)
         if prices:
             result['priceWithOzonCard'] = prices[0].strip()
-            # if len(prices) > 1:
             if len(prices) >= 2:
-                result['price'] = prices[1].strip()  # без Ozon карты
+                result['price'] = prices[1].strip() 
             else:
                 result['price'] = prices[0].strip()
         else:
             result['priceWithOzonCard'] = None
             result['price'] = None
 
-        # Артикул (ищем через data-widget='webDetailSKU')
         article_xpath = "//button[@data-widget='webDetailSKU']//div[contains(text(),'Артикул:')]/text()"
         article_text = tree.xpath(article_xpath)
         if article_text:
@@ -82,7 +74,6 @@ def parse_product_data(html_content, url):
         else:
             result['article'] = "Не найден"
 
-        # Проверяем, есть ли недостающие данные
         required_fields = ['title', 'price', 'article']
         missing_fields = [field for field in required_fields if not result.get(field)]
 

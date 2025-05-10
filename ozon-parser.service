@@ -1,0 +1,18 @@
+# /etc/systemd/system
+
+[Unit]
+Description=Ozon Parser Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/ozon-parser-service
+ExecStart=/usr/local/bin/gunicorn -w 4 -b 0.0.0.0:9000 main:app
+
+Restart=always
+RestartSec=10s
+Environment="PYTHONUNBUFFERED=TRUE"
+
+[Install]
+WantedBy=multi-user.target

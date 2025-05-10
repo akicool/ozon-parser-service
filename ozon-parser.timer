@@ -1,0 +1,12 @@
+# /etc/systemd/system
+
+[Unit]
+Description=Restart Ozon Parser every 90 minutes
+
+[Timer]
+OnBootSec=15min
+OnUnitActiveSec=90min
+Unit=ozon-parser.service
+
+[Install]
+WantedBy=timers.target
